@@ -1,5 +1,7 @@
 package scoreboard.floorball.state;
 
+import javax.swing.JButton;
+
 import scoreboard.floorball.JScoreboardManagerFrame;
 
 public interface State {
@@ -37,9 +39,16 @@ public interface State {
     public void initBtnStartNextPeriod(JScoreboardManagerFrame frame);
 
     public void initBtnGoBackInTime(JScoreboardManagerFrame frame);
-    
+
     public void initBtnTimeoutGuest(JScoreboardManagerFrame frame);
-    
+
     public void initBtnTimeoutHost(JScoreboardManagerFrame frame);
 
+    public void initBtnCancelPenaltyGuest2(JScoreboardManagerFrame frame);
+
+    public void initBtnCancelPenaltyGuest1(JScoreboardManagerFrame frame);
+
+    public void initBtnCancelPenaltyHost2(JScoreboardManagerFrame frame);
+
+    public void initBtnCancelPenaltyHost1(JScoreboardManagerFrame frame);
 }

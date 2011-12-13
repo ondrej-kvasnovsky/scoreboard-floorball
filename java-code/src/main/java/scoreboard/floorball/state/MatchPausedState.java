@@ -7,6 +7,43 @@ import scoreboard.floorball.JScoreboardManagerFrame;
  */
 public class MatchPausedState extends AbstractState {
 
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyGuest2(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyGuest2(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyGuest2().setEnabled(true);
+    }
+
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyGuest1(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyGuest1(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyGuest1().setEnabled(true);
+    }
+
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyHost2(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyHost2(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyHost2().setEnabled(true);
+    }
+
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyHost1(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyHost1(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyHost1().setEnabled(true);
+    }
+
+    
     /**
      * {@inheritDoc}
      * 

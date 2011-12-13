@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.text.MaskFormatter;
 
+import scoreboard.floorball.action.CancelPenaltyAction;
 import scoreboard.floorball.action.ContinueMatchAction;
 import scoreboard.floorball.action.GoBackInTimeAction;
 import scoreboard.floorball.action.PauseMatchAction;
@@ -33,6 +34,19 @@ import scoreboard.floorball.listener.PauseContinueMatchKeyListener;
 import scoreboard.floorball.state.State;
 import scoreboard.floorball.state.StateHolder;
 
+
+/**
+* This code was edited or generated using CloudGarden's Jigloo
+* SWT/Swing GUI Builder, which is free for non-commercial
+* use. If Jigloo is being used commercially (ie, by a corporation,
+* company or business for any purpose whatever) then you
+* should purchase a license for each developer using Jigloo.
+* Please visit www.cloudgarden.com for details.
+* Use of Jigloo implies acceptance of these licensing terms.
+* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+*/
 /**
  * @author Kvasnovsky Ondrej
  */
@@ -73,6 +87,10 @@ public class JScoreboardManagerFrame extends JFrame {
     private final StateHolder stateHolder;
     private JTextField txtGuest;
     private JFormattedTextField txtGuestPenalty1;
+    private JButton btnCancelPenaltyGuest2;
+    private JButton btnCancelPenaltyGuest1;
+    private JButton btnCancelPenaltyHost2;
+    private JButton btnCancelPenaltyHost1;
     private JFormattedTextField txtGuestPenalty2;
     private JTextField txtHost;
     private JFormattedTextField txtHostPenalty1;
@@ -305,21 +323,19 @@ public class JScoreboardManagerFrame extends JFrame {
             this.setTitle("Floorball Scoreboard (by Ondrej Kvasnovsky)");
             {
                 this.pnlMain = new JPanel();
-                final GridBagLayout pnlMainLayout = new GridBagLayout();
+                GridBagLayout pnlMainLayout = new GridBagLayout();
                 getContentPane().add(this.pnlMain, BorderLayout.CENTER);
                 pnlMainLayout.rowWeights = new double[] {0.0, 0.1, 0.1, 0.1,
                         0.1, 0.1, 0.1};
                 pnlMainLayout.rowHeights = new int[] {45, 7, 7, 20, 20, 7, 20};
-                pnlMainLayout.columnWeights = new double[] {0.0, 0.0, 0.3};
-                pnlMainLayout.columnWidths = new int[] {200, 200, 20};
-                this.pnlMain.setLayout(pnlMainLayout);
+                pnlMainLayout.columnWeights = new double[] {0.0, 0.0, 0.0, 0.0};
+                pnlMainLayout.columnWidths = new int[] {200, 100, 100, 200};
+                pnlMain.setLayout(pnlMainLayout);
                 Insets insets2 = new Insets(0, 5, 0,
                         5);
                 {
                     this.txtTime = new JFormattedTextField(createFormatter("##:##"));
-                    this.pnlMain.add(this.txtTime, new GridBagConstraints(1, 0, 1, 1,
-                            0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
+                    pnlMain.add(txtTime, new GridBagConstraints(1, 0, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
                     this.txtTime.setText("20:00");
                 }
                 {
@@ -331,9 +347,7 @@ public class JScoreboardManagerFrame extends JFrame {
                 }
                 {
                     this.txtGuest = new JTextField();
-                    this.pnlMain.add(this.txtGuest, new GridBagConstraints(2, 0, 1, 1,
-                            0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
+                    pnlMain.add(txtGuest, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
                     this.txtGuest.setText("Guest");
                 }
                 Insets insets = new Insets(1, 5, 1,
@@ -354,10 +368,7 @@ public class JScoreboardManagerFrame extends JFrame {
                     final SpinnerListModel spinnerGuestModel = new SpinnerListModel(
                             this.values);
                     this.spinnerGuest = new JSpinner();
-                    this.pnlMain.add(this.spinnerGuest, new GridBagConstraints(2, 1, 1,
-                            1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, insets, 0,
-                            0));
+                    pnlMain.add(spinnerGuest, new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1, 5, 1, 5), 0, 0));
                     this.spinnerGuest.setModel(spinnerGuestModel);
                     this.spinnerGuest.getEditor().setFont(
                             new java.awt.Font("Dialog", 0, 18));
@@ -366,10 +377,7 @@ public class JScoreboardManagerFrame extends JFrame {
                     final SpinnerListModel spinnerPeriodModel = new SpinnerListModel(
                             new String[] {"1", "2", "3"});
                     this.spinnerPeriod = new JSpinner();
-                    this.pnlMain.add(this.spinnerPeriod, new GridBagConstraints(1, 1, 1,
-                            1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, insets, 0,
-                            0));
+                    pnlMain.add(spinnerPeriod, new GridBagConstraints(1, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1, 5, 1, 5), 0, 0));
                     this.spinnerPeriod.setModel(spinnerPeriodModel);
                 }
                 {
@@ -383,9 +391,7 @@ public class JScoreboardManagerFrame extends JFrame {
                 }
                 {
                     this.btnPause = new JButton();
-                    this.pnlMain.add(this.btnPause, new GridBagConstraints(1, 6, 1, 1,
-                            0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
+                    pnlMain.add(btnPause, new GridBagConstraints(1, 6, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
                     this.btnPause.setText("Pause match");
                     this.btnPause.setAction(this.pauseMatchAction);
                 }
@@ -406,17 +412,13 @@ public class JScoreboardManagerFrame extends JFrame {
                 {
                     this.txtGuestPenalty2 = new JFormattedTextField(
                             createFormatter("#:##"));
-                    this.pnlMain.add(this.txtGuestPenalty2, new GridBagConstraints(2, 3,
-                            1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                    pnlMain.add(txtGuestPenalty2, new GridBagConstraints(3, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1, 5), 0, 0));
                 }
                 {
                     this.txtGuestPenalty1 = new JFormattedTextField(
                             createFormatter("#:##"));
 
-                    this.pnlMain.add(this.txtGuestPenalty1, new GridBagConstraints(2, 2,
-                            1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                    pnlMain.add(txtGuestPenalty1, new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1, 5), 0, 0));
                 }
                 {
                     this.pnlMain.add(getBtnShowChronometer(),
@@ -426,9 +428,7 @@ public class JScoreboardManagerFrame extends JFrame {
                                             0, 5, 1, 5), 0, 0));
                 }
                 {
-                    this.pnlMain.add(getBtnContinueMatch(), new GridBagConstraints(
-                            2, 6, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
+                    pnlMain.add(getBtnContinueMatch(), new GridBagConstraints(1, 5, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
                 }
                 {
                     this.pnlMain.add(getBtnTimeoutHost(),
@@ -437,25 +437,21 @@ public class JScoreboardManagerFrame extends JFrame {
                                     GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 }
                 {
-                    this.pnlMain.add(getBtnTimeoutGuest(),
-                            new GridBagConstraints(2, 4, 1, 1, 0.0, 0.0,
-                                    GridBagConstraints.CENTER,
-                                    GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                    pnlMain.add(getBtnTimeoutGuest(), new GridBagConstraints(3, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1, 5), 0, 0));
                 }
                 {
-                    this.pnlMain.add(getBtnStartNextPeriod(),
-                            new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0,
-                                    GridBagConstraints.CENTER,
-                                    GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                    pnlMain.add(getBtnStartNextPeriod(), new GridBagConstraints(3, 6, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1, 5), 0, 0));
                 }
                 {
-                    this.pnlMain.add(getBtnGoBackInTime(), new GridBagConstraints(2,
-                            5, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                    pnlMain.add(getBtnGoBackInTime(), new GridBagConstraints(3, 5, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1, 5), 0, 0));
+                    pnlMain.add(getBtnCancelPenaltyHost1(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+                    pnlMain.add(getBtnCancelPenaltyHost2(), new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+                    pnlMain.add(getBtnCancelPenaltyGuest1(), new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+                    pnlMain.add(getBtnCancelPenaltyGuest2(), new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
                 }
             }
             pack();
-            setSize(600, 220);
+            this.setSize(623, 251);
         }
         catch (final Exception e) {
             e.printStackTrace();
@@ -475,6 +471,42 @@ public class JScoreboardManagerFrame extends JFrame {
      */
     public final void setState(final State state) {
         this.stateHolder.setState(state);
+    }
+    
+    public JButton getBtnCancelPenaltyHost1() {
+        if(btnCancelPenaltyHost1 == null) {
+            btnCancelPenaltyHost1 = new JButton();
+            btnCancelPenaltyHost1.setText("X");
+            btnCancelPenaltyHost1.setAction(new CancelPenaltyAction(this, "X", CancelPenaltyAction.Type.Host1));
+        }
+        return btnCancelPenaltyHost1;
+    }
+    
+    public JButton getBtnCancelPenaltyHost2() {
+        if(btnCancelPenaltyHost2 == null) {
+            btnCancelPenaltyHost2 = new JButton();
+            btnCancelPenaltyHost2.setText("X");
+            btnCancelPenaltyHost2.setAction(new CancelPenaltyAction(this, "X", CancelPenaltyAction.Type.Host2));
+        }
+        return btnCancelPenaltyHost2;
+    }
+    
+    public JButton getBtnCancelPenaltyGuest1() {
+        if(btnCancelPenaltyGuest1 == null) {
+            btnCancelPenaltyGuest1 = new JButton();
+            btnCancelPenaltyGuest1.setText("X");
+            btnCancelPenaltyGuest1.setAction(new CancelPenaltyAction(this, "X", CancelPenaltyAction.Type.Guest1));
+        }
+        return btnCancelPenaltyGuest1;
+    }
+    
+    public JButton getBtnCancelPenaltyGuest2() {
+        if(btnCancelPenaltyGuest2 == null) {
+            btnCancelPenaltyGuest2 = new JButton();
+            btnCancelPenaltyGuest2.setText("X");
+            btnCancelPenaltyGuest2.setAction(new CancelPenaltyAction(this, "X", CancelPenaltyAction.Type.Guest2));
+        }
+        return btnCancelPenaltyGuest2;
     }
 
 }

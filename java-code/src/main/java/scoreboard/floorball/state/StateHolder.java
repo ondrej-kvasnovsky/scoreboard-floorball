@@ -64,5 +64,9 @@ public class StateHolder {
         this.state.initBtnStartNextPeriod(this.frame);
         this.state.initBtnTimeoutHost(this.frame);
         this.state.initBtnTimeoutGuest(this.frame);
+        this.state.initBtnCancelPenaltyGuest1(this.frame);
+        this.state.initBtnCancelPenaltyGuest2(this.frame);
+        this.state.initBtnCancelPenaltyHost1(this.frame);
+        this.state.initBtnCancelPenaltyHost2(this.frame);
     }
 }

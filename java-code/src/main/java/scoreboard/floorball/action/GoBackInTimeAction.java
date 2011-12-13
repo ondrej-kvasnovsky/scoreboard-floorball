@@ -45,7 +45,7 @@ public class GoBackInTimeAction extends ScoreboardAbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         final String value = JOptionPane.showInputDialog(getFrame(), "How many seconds?");
-        if(value != null && value.matches("((-|\\+)?[0-9]+(\\.[0-9]+)?)+")) {
+        if (value != null && value.matches("((-|\\+)?[0-9]+(\\.[0-9]+)?)+")) {
             final Integer seconds = Integer.valueOf(value);
             getFrame().getCurrentMatch().goBackInTime(seconds);
         }

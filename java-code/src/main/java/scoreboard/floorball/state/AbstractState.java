@@ -156,6 +156,42 @@ public abstract class AbstractState implements State {
         frame.getTxtGuestPenalty1().setEnabled(false);
     }
 
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyGuest2(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyGuest2(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyGuest2().setEnabled(false);
+    }
+
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyGuest1(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyGuest1(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyGuest1().setEnabled(false);
+    }
+
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyHost2(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyHost2(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyHost2().setEnabled(false);
+    }
+
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.State#initBtnCancelPenaltyHost1(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnCancelPenaltyHost1(JScoreboardManagerFrame frame) {
+        frame.getBtnCancelPenaltyHost1().setEnabled(false);
+    }
+
     /**
      * {@inheritDoc}
      * 

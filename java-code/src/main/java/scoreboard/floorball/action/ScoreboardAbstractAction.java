@@ -16,6 +16,7 @@ public abstract class ScoreboardAbstractAction extends AbstractAction {
     private final JScoreboardManagerFrame frame;
 
     /**
+     * @param frame
      * @param name
      */
     public ScoreboardAbstractAction(final JScoreboardManagerFrame frame, final String name) {

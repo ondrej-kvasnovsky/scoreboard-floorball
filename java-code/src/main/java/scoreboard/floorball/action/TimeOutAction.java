@@ -21,7 +21,7 @@ public class TimeOutAction extends ScoreboardAbstractAction {
      * @param frame
      * @param name
      */
-    public TimeOutAction(JScoreboardManagerFrame frame, String name) {
+    public TimeOutAction(final JScoreboardManagerFrame frame, final String name) {
         super(frame, name);
     }
 
@@ -32,7 +32,7 @@ public class TimeOutAction extends ScoreboardAbstractAction {
      * @param name
      * @param icon
      */
-    public TimeOutAction(JScoreboardManagerFrame frame, String name, Icon icon) {
+    public TimeOutAction(final JScoreboardManagerFrame frame, final String name, final Icon icon) {
         super(frame, name, icon);
     }
 
@@ -42,7 +42,7 @@ public class TimeOutAction extends ScoreboardAbstractAction {
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(final ActionEvent e) {
         final String actionCommand = e.getActionCommand();
         if ("TimeoutGuest".equals(actionCommand)) {
             getFrame().getCurrentMatch().startTimeOutForGuest();
