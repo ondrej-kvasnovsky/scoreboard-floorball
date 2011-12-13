@@ -5,6 +5,9 @@ import java.awt.event.ActionEvent;
 import scoreboard.floorball.JScoreboardManagerFrame;
 import scoreboard.floorball.state.StateHolder;
 
+/**
+ * @author Ondrej Kvasnovsky
+ */
 public class ContinueMatchAction extends ScoreboardAbstractAction {
 
     /**

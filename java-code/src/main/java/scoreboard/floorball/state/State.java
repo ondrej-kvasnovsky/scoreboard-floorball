@@ -37,5 +37,9 @@ public interface State {
     public void initBtnStartNextPeriod(JScoreboardManagerFrame frame);
 
     public void initBtnGoBackInTime(JScoreboardManagerFrame frame);
+    
+    public void initBtnTimeoutGuest(JScoreboardManagerFrame frame);
+    
+    public void initBtnTimeoutHost(JScoreboardManagerFrame frame);
 
 }

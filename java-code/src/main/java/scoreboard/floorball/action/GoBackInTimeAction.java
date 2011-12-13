@@ -12,7 +12,6 @@ import scoreboard.floorball.JScoreboardManagerFrame;
 
 /**
  * @author Kvasnovsky Ondrej
- * 
  */
 public class GoBackInTimeAction extends ScoreboardAbstractAction {
 
@@ -46,7 +45,9 @@ public class GoBackInTimeAction extends ScoreboardAbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         final String value = JOptionPane.showInputDialog(getFrame(), "How many seconds?");
-        final int seconds = Integer.valueOf(value);
-        getFrame().getCurrentMatch().goBackInTime(seconds);
+        if(value != null && value.matches("((-|\\+)?[0-9]+(\\.[0-9]+)?)+")) {
+            final Integer seconds = Integer.valueOf(value);
+            getFrame().getCurrentMatch().goBackInTime(seconds);
+        }
     }
 }

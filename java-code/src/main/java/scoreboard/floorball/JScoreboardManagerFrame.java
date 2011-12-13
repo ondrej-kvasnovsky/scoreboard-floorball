@@ -28,6 +28,8 @@ import scoreboard.floorball.action.PauseMatchAction;
 import scoreboard.floorball.action.ShowChronometerAction;
 import scoreboard.floorball.action.StartMatchAction;
 import scoreboard.floorball.action.StartNextPeriodAction;
+import scoreboard.floorball.action.TimeOutAction;
+import scoreboard.floorball.listener.PauseContinueMatchKeyListener;
 import scoreboard.floorball.state.State;
 import scoreboard.floorball.state.StateHolder;
 
@@ -52,6 +54,8 @@ public class JScoreboardManagerFrame extends JFrame {
     }
 
     private JButton btnContinueMatch;
+    private JButton btnTimeoutHost;
+    private JButton btnTimeoutGuest;
     private JButton btnGoBackInTime;
     private JButton btnPause;
     private JButton btnShowChronometer;
@@ -60,13 +64,13 @@ public class JScoreboardManagerFrame extends JFrame {
     final ContinueMatchAction continueMatchAction = new ContinueMatchAction(
             this, "Continue match");
     private JScoreboardFrame currentMatch;
-    final PauseMatchAction pauseMatchAction = new PauseMatchAction(this,
+    private final PauseMatchAction pauseMatchAction = new PauseMatchAction(this,
             "Pause match");
     private JPanel pnlMain;
     private JSpinner spinnerGuest;
     private JSpinner spinnerHost;
     private JSpinner spinnerPeriod;
-    final StateHolder stateHolder;
+    private final StateHolder stateHolder;
     private JTextField txtGuest;
     private JFormattedTextField txtGuestPenalty1;
     private JFormattedTextField txtGuestPenalty2;
@@ -147,11 +151,30 @@ public class JScoreboardManagerFrame extends JFrame {
     public JButton getBtnShowChronometer() {
         if (this.btnShowChronometer == null) {
             this.btnShowChronometer = new JButton();
-            this.btnShowChronometer.setText("Show chronometer");
             this.btnShowChronometer.setAction(new ShowChronometerAction(this,
                     "Show chronometer"));
         }
         return this.btnShowChronometer;
+    }
+
+    public JButton getBtnTimeoutHost() {
+        if (this.btnTimeoutHost == null) {
+            this.btnTimeoutHost = new JButton();
+            this.btnTimeoutHost.setAction(new TimeOutAction(this,
+                    "Time-Out"));
+            this.btnTimeoutHost.setActionCommand("TimeoutHost");
+        }
+        return this.btnTimeoutHost;
+    }
+    
+    public JButton getBtnTimeoutGuest() {
+        if (this.btnTimeoutGuest == null) {
+            this.btnTimeoutGuest = new JButton();
+            this.btnTimeoutGuest.setAction(new TimeOutAction(this,
+                    "Time-Out"));
+            this.btnTimeoutGuest.setActionCommand("TimeoutGuest");
+        }
+        return this.btnTimeoutGuest;
     }
 
     /**
@@ -290,37 +313,38 @@ public class JScoreboardManagerFrame extends JFrame {
                 pnlMainLayout.columnWeights = new double[] {0.0, 0.0, 0.3};
                 pnlMainLayout.columnWidths = new int[] {200, 200, 20};
                 this.pnlMain.setLayout(pnlMainLayout);
+                Insets insets2 = new Insets(0, 5, 0,
+                        5);
                 {
                     this.txtTime = new JFormattedTextField(createFormatter("##:##"));
                     this.pnlMain.add(this.txtTime, new GridBagConstraints(1, 0, 1, 1,
                             0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
                     this.txtTime.setText("20:00");
                 }
                 {
                     this.txtHost = new JTextField();
                     this.pnlMain.add(this.txtHost, new GridBagConstraints(0, 0, 1, 1,
                             0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
                     this.txtHost.setText("Host");
                 }
                 {
                     this.txtGuest = new JTextField();
                     this.pnlMain.add(this.txtGuest, new GridBagConstraints(2, 0, 1, 1,
                             0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
                     this.txtGuest.setText("Guest");
                 }
+                Insets insets = new Insets(1, 5, 1,
+                        5);
                 {
                     final SpinnerListModel spinnerHostModel = new SpinnerListModel(
                             this.values);
                     this.spinnerHost = new JSpinner();
                     this.pnlMain.add(this.spinnerHost, new GridBagConstraints(0, 1, 1, 1,
                             0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(1, 5, 1, 5), 0,
+                            GridBagConstraints.BOTH, insets, 0,
                             0));
                     this.spinnerHost.setModel(spinnerHostModel);
                     this.spinnerHost.getEditor().setFont(
@@ -332,7 +356,7 @@ public class JScoreboardManagerFrame extends JFrame {
                     this.spinnerGuest = new JSpinner();
                     this.pnlMain.add(this.spinnerGuest, new GridBagConstraints(2, 1, 1,
                             1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(1, 5, 1, 5), 0,
+                            GridBagConstraints.BOTH, insets, 0,
                             0));
                     this.spinnerGuest.setModel(spinnerGuestModel);
                     this.spinnerGuest.getEditor().setFont(
@@ -344,7 +368,7 @@ public class JScoreboardManagerFrame extends JFrame {
                     this.spinnerPeriod = new JSpinner();
                     this.pnlMain.add(this.spinnerPeriod, new GridBagConstraints(1, 1, 1,
                             1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(1, 5, 1, 5), 0,
+                            GridBagConstraints.BOTH, insets, 0,
                             0));
                     this.spinnerPeriod.setModel(spinnerPeriodModel);
                 }
@@ -361,8 +385,7 @@ public class JScoreboardManagerFrame extends JFrame {
                     this.btnPause = new JButton();
                     this.pnlMain.add(this.btnPause, new GridBagConstraints(1, 6, 1, 1,
                             0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
                     this.btnPause.setText("Pause match");
                     this.btnPause.setAction(this.pauseMatchAction);
                 }
@@ -371,50 +394,64 @@ public class JScoreboardManagerFrame extends JFrame {
                             createFormatter("#:##"));
                     this.pnlMain.add(this.txtHostPenalty1, new GridBagConstraints(0, 2,
                             1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 }
                 {
                     this.txtHostPenalty2 = new JFormattedTextField(
                             createFormatter("#:##"));
                     this.pnlMain.add(this.txtHostPenalty2, new GridBagConstraints(0, 3,
                             1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 }
                 {
                     this.txtGuestPenalty2 = new JFormattedTextField(
                             createFormatter("#:##"));
                     this.pnlMain.add(this.txtGuestPenalty2, new GridBagConstraints(2, 3,
                             1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 }
                 {
                     this.txtGuestPenalty1 = new JFormattedTextField(
                             createFormatter("#:##"));
+
                     this.pnlMain.add(this.txtGuestPenalty1, new GridBagConstraints(2, 2,
                             1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                }
+                {
                     this.pnlMain.add(getBtnShowChronometer(),
                             new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0,
                                     GridBagConstraints.CENTER,
                                     GridBagConstraints.HORIZONTAL, new Insets(
                                             0, 5, 1, 5), 0, 0));
+                }
+                {
                     this.pnlMain.add(getBtnContinueMatch(), new GridBagConstraints(
                             2, 6, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets2, 0, 0));
+                }
+                {
+                    this.pnlMain.add(getBtnTimeoutHost(),
+                            new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0,
+                                    GridBagConstraints.CENTER,
+                                    GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                }
+                {
+                    this.pnlMain.add(getBtnTimeoutGuest(),
+                            new GridBagConstraints(2, 4, 1, 1, 0.0, 0.0,
+                                    GridBagConstraints.CENTER,
+                                    GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                }
+                {
                     this.pnlMain.add(getBtnStartNextPeriod(),
                             new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0,
                                     GridBagConstraints.CENTER,
-                                    GridBagConstraints.HORIZONTAL, new Insets(
-                                            1, 5, 1, 5), 0, 0));
+                                    GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                }
+                {
                     this.pnlMain.add(getBtnGoBackInTime(), new GridBagConstraints(2,
                             5, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.HORIZONTAL, new Insets(1, 5, 1,
-                                    5), 0, 0));
+                            GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 }
             }
             pack();
@@ -439,4 +476,5 @@ public class JScoreboardManagerFrame extends JFrame {
     public final void setState(final State state) {
         this.stateHolder.setState(state);
     }
+
 }

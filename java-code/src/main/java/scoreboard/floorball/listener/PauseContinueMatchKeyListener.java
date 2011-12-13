@@ -1,18 +1,19 @@
 /**
  * PauseContinueMatchKeyListener.java 20.9.2010
  */
-package scoreboard.floorball;
+package scoreboard.floorball.listener;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import scoreboard.floorball.JScoreboardManagerFrame;
 import scoreboard.floorball.state.StateHolder;
 
 /**
  * @author Kvasnovsky Ondrej
  */
-final class PauseContinueMatchKeyListener implements KeyListener {
+public final class PauseContinueMatchKeyListener implements KeyListener {
 
     /**
     * 
@@ -22,7 +23,7 @@ final class PauseContinueMatchKeyListener implements KeyListener {
     /**
      * @param jScoreboardManagerFrame
      */
-    PauseContinueMatchKeyListener(
+    public PauseContinueMatchKeyListener(
             final JScoreboardManagerFrame jScoreboardManagerFrame) {
         this.frame = jScoreboardManagerFrame;
     }
@@ -50,11 +51,11 @@ final class PauseContinueMatchKeyListener implements KeyListener {
             final int keyCodeSpace = 32;
             if (keyCodeSpace == e.getKeyCode()) {
                 if (this.frame.getStateHolder().getState() == StateHolder.STATE_MATCH_STARTED) {
-                    this.frame.pauseMatchAction.actionPerformed(new ActionEvent(
+                    this.frame.getPauseMatchAction().actionPerformed(new ActionEvent(
                             this.frame.getBtnPause(), 0, "space pressed"));
                 }
                 else {
-                    this.frame.continueMatchAction.actionPerformed(new ActionEvent(
+                    this.frame.getContinueMatchAction().actionPerformed(new ActionEvent(
                             this.frame.getBtnContinueMatch(), 0, "space pressed"));
                 }
             }

@@ -16,6 +16,8 @@ public class StateHolder {
     public static final MatchStartedState STATE_MATCH_STARTED = new MatchStartedState();
     public static final MatchPausedState STATE_MATCH_PAUSED = new MatchPausedState();
     public static final PeriodEndedState STATE_PERIOD_ENDED = new PeriodEndedState();
+    public static final TimeOutState STATE_TIMEOUT = new TimeOutState();
+    
     private State state;
     private final JScoreboardManagerFrame frame;
 
@@ -39,6 +41,7 @@ public class StateHolder {
     public final void setState(final State state) {
         this.state = state;
         applyState();
+        System.out.println(state.getClass().getSimpleName() + " applied");
     }
 
     private void applyState() {
@@ -59,5 +62,7 @@ public class StateHolder {
         this.state.initBtnContinueMatch(this.frame);
         this.state.initBtnGoBackInTime(this.frame);
         this.state.initBtnStartNextPeriod(this.frame);
+        this.state.initBtnTimeoutHost(this.frame);
+        this.state.initBtnTimeoutGuest(this.frame);
     }
 }

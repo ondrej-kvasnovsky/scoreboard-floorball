@@ -10,7 +10,6 @@ import scoreboard.floorball.JScoreboardManagerFrame;
 
 /**
  * @author Kvasnovsky Ondrej
- * 
  */
 public abstract class ScoreboardAbstractAction extends AbstractAction {
 

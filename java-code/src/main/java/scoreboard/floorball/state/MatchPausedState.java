@@ -2,7 +2,29 @@ package scoreboard.floorball.state;
 
 import scoreboard.floorball.JScoreboardManagerFrame;
 
+/**
+ * @author Ondrej Kvasnovsky
+ */
 public class MatchPausedState extends AbstractState {
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see scoreboard.floorball.state.State#initBtnTimeoutHost(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnTimeoutGuest(JScoreboardManagerFrame frame) {
+        frame.getBtnTimeoutGuest().setEnabled(true);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     * @see scoreboard.floorball.state.AbstractState#initBtnTimeoutHost(scoreboard.floorball.JScoreboardManagerFrame)
+     */
+    @Override
+    public void initBtnTimeoutHost(JScoreboardManagerFrame frame) {
+        frame.getBtnTimeoutHost().setEnabled(true);
+    }
 
     /*
      * (non-Javadoc)

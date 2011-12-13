@@ -7,120 +7,37 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.IOException;
-import java.io.InputStream;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-import scoreboard.floorball.state.StateHolder;
+import scoreboard.floorball.listener.MainTimerTimeListener;
+import scoreboard.floorball.listener.PauseContinueMatchKeyListener;
+import scoreboard.floorball.listener.PenaltyTimeListener;
+import scoreboard.floorball.listener.TimeOutTimeListener;
 import scoreboard.timer.MainTimer;
 import scoreboard.timer.TimerTask;
-import scoreboard.timer.TimerTaskListener;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
 
+/**
+ * This code was edited or generated using CloudGarden's Jigloo
+ * SWT/Swing GUI Builder, which is free for non-commercial
+ * use. If Jigloo is being used commercially (ie, by a corporation,
+ * company or business for any purpose whatever) then you
+ * should purchase a license for each developer using Jigloo.
+ * Please visit www.cloudgarden.com for details.
+ * Use of Jigloo implies acceptance of these licensing terms.
+ * A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+ * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+ * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+ */
 /**
  * @author Kvasnovsky Ondrej
  */
 public class JScoreboardFrame extends javax.swing.JFrame {
 
-    class MainTimerTimeListener implements TimerTaskListener {
-
-        @Override
-        public void taskEnded() {
-            JScoreboardFrame.this.mainTimer.pause();
-            try {
-                // Open an input stream to the audio file.
-                final InputStream is = getClass().getResourceAsStream("horn.au");
-                // Create an AudioStream object from the input stream.
-                final AudioStream as = new AudioStream(is);
-                // Use the static class member "player" from class AudioPlayer
-                // to play clip.
-                AudioPlayer.player.start(as);
-                Thread.currentThread();
-                Thread.sleep(2000);
-                AudioPlayer.player.stop(as);
-            }
-            catch (final java.net.MalformedURLException e) {
-                System.err.println("can't form horn.au URL");
-            }
-            catch (final IOException e) {
-                System.out.println(e.getMessage());
-            }
-            catch (final InterruptedException e) {
-                System.out.println(e.getMessage());
-            }
-            JScoreboardFrame.this.mainTimer.removeMainTimerListener(JScoreboardFrame.this.mainTimerTask);
-            JScoreboardFrame.this.mainTimerTask = null;
-            JScoreboardFrame.this.frame.getTxtTime().setText("20:00");
-            JScoreboardFrame.this.lblTime.setText("20:00");
-            final Integer period = Integer.valueOf(JScoreboardFrame.this.lblPeriod.getText()) + 1;
-            JScoreboardFrame.this.frame.getSpinnerPeriod().setValue(period.toString());
-            JScoreboardFrame.this.frame.setState(StateHolder.STATE_PERIOD_ENDED);
-        }
-
-        @Override
-        public void timeChanged() {
-            JScoreboardFrame.this.lblTime.setText(JScoreboardFrame.this.mainTimerTask.toString("mm:ss"));
-            JScoreboardFrame.this.frame.getTxtTime().setText(JScoreboardFrame.this.mainTimerTask.toString("mm:ss"));
-        }
-    }
-
-    class PenaltyTimeListener implements TimerTaskListener {
-
-        private final JLabel lbl;
-        private final TimerTask timer;
-        private final JTextField txt;
-
-        /**
-         * @param lbl
-         */
-        private PenaltyTimeListener(final JLabel lbl, final JTextField txt, final TimerTask timer) {
-            this.lbl = lbl;
-            this.txt = txt;
-            this.timer = timer;
-        }
-
-        @Override
-        public void taskEnded() {
-            if (this.timer == JScoreboardFrame.this.timerGuestPenalty1) {
-                JScoreboardFrame.this.frame.getTxtGuestPenalty1().setText("");
-                JScoreboardFrame.this.lblGuestPenalty1.setText(" ");
-                JScoreboardFrame.this.mainTimer.removeMainTimerListener(JScoreboardFrame.this.timerGuestPenalty1);
-                JScoreboardFrame.this.timerGuestPenalty1 = null;
-            }
-            else if (this.timer == JScoreboardFrame.this.timerGuestPenalty2) {
-                JScoreboardFrame.this.frame.getTxtGuestPenalty2().setText("");
-                JScoreboardFrame.this.lblGuestPenalty2.setText(" ");
-                JScoreboardFrame.this.mainTimer.removeMainTimerListener(JScoreboardFrame.this.timerGuestPenalty2);
-                JScoreboardFrame.this.timerGuestPenalty2 = null;
-            }
-            else if (this.timer == JScoreboardFrame.this.timerHostPenalty1) {
-                JScoreboardFrame.this.frame.getTxtHostPenalty1().setText("");
-                JScoreboardFrame.this.lblHostPenalty1.setText(" ");
-                JScoreboardFrame.this.mainTimer.removeMainTimerListener(JScoreboardFrame.this.timerHostPenalty1);
-                JScoreboardFrame.this.timerHostPenalty1 = null;
-            }
-            else if (this.timer == JScoreboardFrame.this.timerHostPenalty2) {
-                JScoreboardFrame.this.frame.getTxtHostPenalty2().setText("");
-                JScoreboardFrame.this.lblHostPenalty2.setText(" ");
-                JScoreboardFrame.this.mainTimer.removeMainTimerListener(JScoreboardFrame.this.timerHostPenalty2);
-                JScoreboardFrame.this.timerHostPenalty2 = null;
-            }
-        }
-
-        @Override
-        public void timeChanged() {
-            this.lbl.setText(this.timer.toString("m:ss"));
-            this.txt.setText(this.timer.toString("m:ss"));
-        }
-    }
-
-    private final JScoreboardManagerFrame frame;
+    private final JScoreboardManagerFrame frameManager;
     private JLabel lblGuest;
     private JLabel lblGuestPenalty1;
     private JLabel lblGuestPenalty2;
@@ -131,19 +48,34 @@ public class JScoreboardFrame extends javax.swing.JFrame {
     private JLabel lblHostScore;
     private JLabel lblPeriod;
     private JLabel lblTime;
+    private JLabel lblTimeOut;
     private final MainTimer mainTimer = new MainTimer();
+    private MainTimer timeoutTimer = new MainTimer();
+    private TimerTask timerTimeOutGuest;
+    private TimerTask timerTimeOutHost;
     private TimerTask mainTimerTask;
+    /**
+     * Sets the timeoutTimer.
+     * 
+     * @param timeoutTimer the timeoutTimer to set
+     */
+    public void setTimeoutTimer(MainTimer timeoutTimer) {
+        this.timeoutTimer = timeoutTimer;
+    }
+
     private JPanel pnlMain;
     private TimerTask timerGuestPenalty1;
     private TimerTask timerGuestPenalty2;
     private TimerTask timerHostPenalty1;
+    private JLabel lblTimeOutGuest;
+    private JLabel lblTimeOutHost;
     private TimerTask timerHostPenalty2;
 
     public JScoreboardFrame(final JScoreboardManagerFrame frame) {
         super();
         initGUI();
-        this.frame = frame;
-        this.lblTime.setText(frame.getTxtTime().getText());
+        this.frameManager = frame;
+        this.getLblTime().setText(frame.getTxtTime().getText());
         this.lblHost.setText(frame.getTxtHost().getText());
         this.lblGuest.setText(frame.getTxtGuest().getText());
         addKeyListener(new PauseContinueMatchKeyListener(frame));
@@ -152,11 +84,11 @@ public class JScoreboardFrame extends javax.swing.JFrame {
     }
 
     public void continueMatch() {
-        this.mainTimer.cont();
+        this.getMainTimer().cont();
     }
 
-    public void goBackInTime(final int seconds) {
-        this.mainTimer.goBackInTime(seconds);
+    public void goBackInTime(final Integer seconds) {
+        this.getMainTimer().goBackInTime(seconds);
         updateTimeTaskData();
     }
 
@@ -173,28 +105,28 @@ public class JScoreboardFrame extends javax.swing.JFrame {
             getContentPane().setBackground(new java.awt.Color(255, 255, 255));
             {
                 this.pnlMain = new JPanel();
-                final GridBagLayout pnlMainLayout = new GridBagLayout();
+                GridBagLayout pnlMainLayout = new GridBagLayout();
                 getContentPane().add(
                         this.pnlMain,
                         new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
                                 GridBagConstraints.CENTER,
                                 GridBagConstraints.BOTH,
                                 new Insets(0, 0, 0, 0), 0, 0));
-                pnlMainLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1};
-                pnlMainLayout.rowHeights = new int[] {7, 7, 7, 7};
+                pnlMainLayout.rowWeights = new double[] {0.1, 0.0, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+                pnlMainLayout.rowHeights = new int[] {7, 7, 7, 7, 7, 7, 7, 7, 7};
                 pnlMainLayout.columnWeights = new double[] {0.6, 0.5, 0.5};
                 pnlMainLayout.columnWidths = new int[] {220, 200, 220};
-                this.pnlMain.setLayout(pnlMainLayout);
+                pnlMain.setLayout(pnlMainLayout);
                 this.pnlMain.setBackground(new java.awt.Color(255, 255, 255));
                 {
-                    this.lblTime = new JLabel("", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblTime, new GridBagConstraints(1, 0, 1, 1,
+                    this.setLblTime(new JLabel("", SwingConstants.CENTER));
+                    this.pnlMain.add(this.getLblTime(), new GridBagConstraints(1, 0, 1, 1,
                             0.0, 0.0, GridBagConstraints.CENTER,
                             GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
                             0));
-                    this.lblTime.setText("00:00");
-                    this.lblTime.setFont(new java.awt.Font("Tahoma", 0, 120));
-                    this.lblTime.setForeground(new java.awt.Color(206, 0, 0));
+                    this.getLblTime().setText("00:00");
+                    this.getLblTime().setFont(new java.awt.Font("Tahoma", 0, 120));
+                    this.getLblTime().setForeground(new java.awt.Color(206, 0, 0));
                 }
                 {
                     this.lblHost = new JLabel("", SwingConstants.CENTER);
@@ -205,7 +137,7 @@ public class JScoreboardFrame extends javax.swing.JFrame {
                             GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
                             0));
                     this.lblHost.setFont(new java.awt.Font("Tahoma", 0, 60));
-                    this.lblHost.setText("Domaci");
+                    this.lblHost.setText("Host");
                 }
                 {
                     this.lblGuest = new JLabel("", SwingConstants.CENTER);
@@ -216,87 +148,96 @@ public class JScoreboardFrame extends javax.swing.JFrame {
                             GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
                             0));
                     this.lblGuest.setFont(new java.awt.Font("Tahoma", 0, 60));
-                    this.lblGuest.setText("Hoste");
+                    this.lblGuest.setText("Guest");
                 }
                 {
-                    this.lblPeriod = new JLabel("", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblPeriod, new GridBagConstraints(1, 1, 1, 1,
-                            0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                            0));
-                    this.lblPeriod.setText("1");
-                    this.lblPeriod.setFont(new java.awt.Font("Tahoma", 0, 60));
-                    this.lblPeriod.setForeground(new java.awt.Color(0, 179, 0));
+                    this.setLblPeriod(new JLabel("", SwingConstants.CENTER));
+                    pnlMain.add(getLblPeriod(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+                    this.getLblPeriod().setText("1");
+                    this.getLblPeriod().setFont(new java.awt.Font("Tahoma", 0, 60));
+                    this.getLblPeriod().setForeground(new java.awt.Color(0, 179, 0));
                 }
                 {
-                    this.lblHostPenalty1 = new JLabel(" ", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblHostPenalty1, new GridBagConstraints(0, 2,
-                            1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                            0));
-                    this.lblHostPenalty1
+                    this.setLblHostPenalty1(new JLabel(" ", SwingConstants.CENTER));
+                    pnlMain.add(getLblHostPenalty1(), new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+                    this.getLblHostPenalty1()
                             .setForeground(new java.awt.Color(255, 0, 0));
-                    this.lblHostPenalty1.setFont(new java.awt.Font("Tahoma", 0, 60));
+                    this.getLblHostPenalty1().setFont(new java.awt.Font("Tahoma", 0, 60));
                 }
                 {
-                    this.lblHostPenalty2 = new JLabel(" ", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblHostPenalty2, new GridBagConstraints(0, 3,
-                            1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                            0));
-                    this.lblHostPenalty2.setText("");
-                    this.lblHostPenalty2
+                    this.setLblHostPenalty2(new JLabel(" ", SwingConstants.CENTER));
+                    pnlMain.add(getLblHostPenalty2(), new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+                    this.getLblHostPenalty2().setText("");
+                    this.getLblHostPenalty2()
                             .setForeground(new java.awt.Color(255, 0, 0));
-                    this.lblHostPenalty2.setFont(new java.awt.Font("Tahoma", 0, 60));
+                    this.getLblHostPenalty2().setFont(new java.awt.Font("Tahoma", 0, 60));
                 }
                 {
-                    this.lblGuestPenalty1 = new JLabel(" ", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblGuestPenalty1, new GridBagConstraints(2, 2,
-                            1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                            0));
-                    this.lblGuestPenalty1.setText(" ");
-                    this.lblGuestPenalty1
+                    this.setLblGuestPenalty1(new JLabel(" ", SwingConstants.CENTER));
+                    pnlMain.add(getLblGuestPenalty1(), new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+                    this.getLblGuestPenalty1().setText(" ");
+                    this.getLblGuestPenalty1()
                             .setForeground(new java.awt.Color(255, 0, 0));
-                    this.lblGuestPenalty1
+                    this.getLblGuestPenalty1()
                             .setFont(new java.awt.Font("Tahoma", 0, 60));
                 }
                 {
-                    this.lblGuestPenalty2 = new JLabel("", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblGuestPenalty2, new GridBagConstraints(2, 3,
-                            1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                            0));
-                    this.lblGuestPenalty2.setText(" ");
-                    this.lblGuestPenalty2
+                    this.setLblGuestPenalty2(new JLabel("", SwingConstants.CENTER));
+                    pnlMain.add(getLblGuestPenalty2(), new GridBagConstraints(2, 4, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+                    this.getLblGuestPenalty2().setText(" ");
+                    this.getLblGuestPenalty2()
                             .setForeground(new java.awt.Color(255, 0, 0));
-                    this.lblGuestPenalty2
+                    this.getLblGuestPenalty2()
                             .setFont(new java.awt.Font("Tahoma", 0, 60));
                 }
                 {
                     this.lblHostScore = new JLabel("", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblHostScore, new GridBagConstraints(0, 1, 1,
-                            1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                            0));
+                    pnlMain.add(lblHostScore, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
                     this.lblHostScore.setText("0");
                     this.lblHostScore.setFont(new java.awt.Font("Tahoma", 0, 120));
-                    this.lblHostScore.setForeground(new java.awt.Color(255, 128, 0));
+                    lblHostScore.setForeground(new java.awt.Color(0, 0, 0));
                 }
                 {
                     this.lblGuestScore = new JLabel("", SwingConstants.CENTER);
-                    this.pnlMain.add(this.lblGuestScore, new GridBagConstraints(2, 1, 1,
-                            1, 0.0, 0.0, GridBagConstraints.CENTER,
-                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                            0));
+                    pnlMain.add(lblGuestScore, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
                     this.lblGuestScore.setText("0");
                     this.lblGuestScore.setFont(new java.awt.Font("Tahoma", 0, 120));
-                    this.lblGuestScore
-                            .setForeground(new java.awt.Color(255, 128, 0));
+                    lblGuestScore.setForeground(new java.awt.Color(0, 0, 0));
+                }
+                {
+                    this.lblTimeOut = new JLabel();
+                    pnlMain.add(lblTimeOut, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                            GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+                    lblTimeOut.setText("");
+                    this.lblTimeOut.setFont(new java.awt.Font("Tahoma", 0, 60));
+                    lblTimeOut.setForeground(new java.awt.Color(128, 0, 255));
+                }
+                {
+                    lblTimeOutHost = new JLabel();
+                    pnlMain.add(lblTimeOutHost, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+                            GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+                    lblTimeOutHost.setText("");
+                    lblTimeOutHost.setFont(new java.awt.Font("Tahoma", 0, 48));
+                    lblTimeOutHost.setForeground(new java.awt.Color(128, 0, 255));
+                }
+                {
+                    lblTimeOutGuest = new JLabel();
+                    pnlMain.add(lblTimeOutGuest, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+                            GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+                    lblTimeOutGuest.setText("");
+                    lblTimeOutGuest.setForeground(new java.awt.Color(128, 0, 255));
+                    lblTimeOutGuest.setFont(new java.awt.Font("Tahoma", 0, 48));
                 }
             }
             pack();
-            this.setSize(840, 407);
+            this.setSize(910, 606);
         }
         catch (final Exception e) {
             e.printStackTrace();
@@ -304,105 +245,388 @@ public class JScoreboardFrame extends javax.swing.JFrame {
     }
 
     public void pauseMatch() {
-        this.mainTimer.pause();
+        this.getMainTimer().pause();
     }
 
     public void penaltyToGuest() {
-        if (this.timerGuestPenalty1 == null
-                && !"".equals(this.frame.getTxtGuestPenalty1().getText().trim())
-                && !":".equals(this.frame.getTxtGuestPenalty1().getText().trim())) {
-            this.timerGuestPenalty1 = new TimerTask(this.frame.getTxtGuestPenalty1()
-                    .getText());
-            this.mainTimer.addMainTimerListener(this.timerGuestPenalty1);
+        if (this.getTimerGuestPenalty1() == null
+                && !"".equals(this.getFrameManager().getTxtGuestPenalty1().getText().trim())
+                && !":".equals(this.getFrameManager().getTxtGuestPenalty1().getText().trim())) {
+            this.setTimerGuestPenalty1(new TimerTask(this.getFrameManager().getTxtGuestPenalty1()
+                    .getText()));
+            this.getMainTimer().addMainTimerListener(this.getTimerGuestPenalty1());
             final PenaltyTimeListener listener = new PenaltyTimeListener(
-                    this.lblGuestPenalty1, this.frame.getTxtGuestPenalty1(),
-                    this.timerGuestPenalty1);
-            this.timerGuestPenalty1.add(listener);
+                    this, this.getLblGuestPenalty1(), this.getFrameManager().getTxtGuestPenalty1(),
+                    this.getTimerGuestPenalty1());
+            this.getTimerGuestPenalty1().add(listener);
         }
-        if (this.timerGuestPenalty2 == null
-                && !"".equals(this.frame.getTxtGuestPenalty2().getText().trim())
-                && !":".equals(this.frame.getTxtGuestPenalty2().getText().trim())) {
-            this.timerGuestPenalty2 = new TimerTask(this.frame.getTxtGuestPenalty2()
-                    .getText());
-            this.mainTimer.addMainTimerListener(this.timerGuestPenalty2);
+        if (this.getTimerGuestPenalty2() == null
+                && !"".equals(this.getFrameManager().getTxtGuestPenalty2().getText().trim())
+                && !":".equals(this.getFrameManager().getTxtGuestPenalty2().getText().trim())) {
+            this.setTimerGuestPenalty2(new TimerTask(this.getFrameManager().getTxtGuestPenalty2()
+                    .getText()));
+            this.getMainTimer().addMainTimerListener(this.getTimerGuestPenalty2());
             final PenaltyTimeListener listener = new PenaltyTimeListener(
-                    this.lblGuestPenalty2, this.frame.getTxtGuestPenalty2(),
-                    this.timerGuestPenalty2);
-            this.timerGuestPenalty2.add(listener);
+                    this, this.getLblGuestPenalty2(), this.getFrameManager().getTxtGuestPenalty2(),
+                    this.getTimerGuestPenalty2());
+            this.getTimerGuestPenalty2().add(listener);
         }
     }
 
     public void penaltyToHost() {
-        if (this.timerHostPenalty1 == null
-                && !"".equals(this.frame.getTxtHostPenalty1().getText().trim())
-                && !":".equals(this.frame.getTxtHostPenalty1().getText().trim())) {
-            this.timerHostPenalty1 = new TimerTask(this.frame.getTxtHostPenalty1()
-                    .getText());
+        if (this.getTimerHostPenalty1() == null
+                && !"".equals(this.getFrameManager().getTxtHostPenalty1().getText().trim())
+                && !":".equals(this.getFrameManager().getTxtHostPenalty1().getText().trim())) {
+            this.setTimerHostPenalty1(new TimerTask(this.getFrameManager().getTxtHostPenalty1()
+                    .getText()));
             final PenaltyTimeListener listener = new PenaltyTimeListener(
-                    this.lblHostPenalty1, this.frame.getTxtHostPenalty1(),
-                    this.timerHostPenalty1);
-            this.mainTimer.addMainTimerListener(this.timerHostPenalty1);
-            this.timerHostPenalty1.add(listener);
+                    this, this.getLblHostPenalty1(), this.getFrameManager().getTxtHostPenalty1(),
+                    this.getTimerHostPenalty1());
+            this.getMainTimer().addMainTimerListener(this.getTimerHostPenalty1());
+            this.getTimerHostPenalty1().add(listener);
         }
-        if (this.timerHostPenalty2 == null
-                && !"".equals(this.frame.getTxtHostPenalty2().getText().trim())
-                && !":".equals(this.frame.getTxtHostPenalty2().getText().trim())) {
-            this.timerHostPenalty2 = new TimerTask(this.frame.getTxtHostPenalty2()
-                    .getText());
+        if (this.getTimerHostPenalty2() == null
+                && !"".equals(this.getFrameManager().getTxtHostPenalty2().getText().trim())
+                && !":".equals(this.getFrameManager().getTxtHostPenalty2().getText().trim())) {
+            this.setTimerHostPenalty2(new TimerTask(this.getFrameManager().getTxtHostPenalty2()
+                    .getText()));
             final PenaltyTimeListener listener = new PenaltyTimeListener(
-                    this.lblHostPenalty2, this.frame.getTxtHostPenalty2(),
-                    this.timerHostPenalty2);
-            this.mainTimer.addMainTimerListener(this.timerHostPenalty2);
-            this.timerHostPenalty2.add(listener);
+                    this, this.getLblHostPenalty2(), this.getFrameManager().getTxtHostPenalty2(),
+                    this.getTimerHostPenalty2());
+            this.getMainTimer().addMainTimerListener(this.getTimerHostPenalty2());
+            this.getTimerHostPenalty2().add(listener);
         }
+    }
+
+
+    /**
+     * Returns the timeoutTimer.
+     * 
+     * @return the timeoutTimer
+     */
+    public MainTimer getTimeoutTimer() {
+        return timeoutTimer;
+    }
+
+    /**
+     * Returns the timerTimeOutGuest.
+     * 
+     * @return the timerTimeOutGuest
+     */
+    public TimerTask getTimerTimeOutGuest() {
+        return timerTimeOutGuest;
+    }
+
+    /**
+     * Returns the timerTimeOutHost.
+     * 
+     * @return the timerTimeOutHost
+     */
+    public TimerTask getTimerTimeOutHost() {
+        return timerTimeOutHost;
+    }
+
+    /**
+     * Returns the lblTimeOut.
+     * 
+     * @return the lblTimeOut
+     */
+    public JLabel getLblTimeOut() {
+        return lblTimeOut;
+    }
+
+    private final String timeoutTime = "00:30";
+    
+    public void startTimeOutForHost() {
+        this.lblTimeOutHost.setText("T");
+        this.lblTimeOut.setText(timeoutTime);
+        this.timerTimeOutHost = new TimerTask(timeoutTime);
+        this.timerTimeOutHost.add(new TimeOutTimeListener(this, TimeOutTimeListener.Type.Host));
+        this.timeoutTimer.addMainTimerListener(timerTimeOutHost);
+        this.timeoutTimer.start();
+    }
+    
+
+    public void startTimeOutForGuest() {
+        this.lblTimeOutGuest.setText("T");
+        this.lblTimeOut.setText(timeoutTime);
+        this.timerTimeOutGuest = new TimerTask(timeoutTime);
+        this.timerTimeOutGuest.add(new TimeOutTimeListener(this, TimeOutTimeListener.Type.Guest));
+        this.timeoutTimer.addMainTimerListener(timerTimeOutGuest);
+        this.timeoutTimer.start();
     }
 
     public void startMatch() {
-        this.mainTimer.start();
-        this.mainTimerTask = new TimerTask(this.frame.getTxtTime().getText());
-        this.mainTimer.addMainTimerListener(this.mainTimerTask);
-        this.mainTimerTask.add(new MainTimerTimeListener());
+        this.getMainTimer().start();
+        this.setMainTimerTask(new TimerTask(this.getFrameManager().getTxtTime().getText()));
+        this.getMainTimer().addMainTimerListener(this.getMainTimerTask());
+        this.getMainTimerTask().add(new MainTimerTimeListener(this));
     }
 
     public void startNextPeriod() {
-        this.mainTimerTask = new TimerTask(this.frame.getTxtTime().getText());
-        this.mainTimer.addMainTimerListener(this.mainTimerTask);
-        this.mainTimerTask.add(new MainTimerTimeListener());
-        this.mainTimer.cont();
+        this.setMainTimerTask(new TimerTask(this.getFrameManager().getTxtTime().getText()));
+        this.getMainTimer().addMainTimerListener(this.getMainTimerTask());
+        this.getMainTimerTask().add(new MainTimerTimeListener(this));
+        this.getMainTimer().cont();
     }
 
     public void updateMatchData() {
-        this.lblGuestScore.setText(this.frame.getSpinnerGuest().getValue().toString());
-        this.lblHostScore.setText(this.frame.getSpinnerHost().getValue().toString());
-        this.lblPeriod.setText(this.frame.getSpinnerPeriod().getValue().toString());
-        this.lblHost.setText(this.frame.getTxtHost().getText());
-        this.lblGuest.setText(this.frame.getTxtGuest().getText());
+        this.lblGuestScore.setText(this.getFrameManager().getSpinnerGuest().getValue().toString());
+        this.lblHostScore.setText(this.getFrameManager().getSpinnerHost().getValue().toString());
+        this.getLblPeriod().setText(this.getFrameManager().getSpinnerPeriod().getValue().toString());
+        this.lblHost.setText(this.getFrameManager().getTxtHost().getText());
+        this.lblGuest.setText(this.getFrameManager().getTxtGuest().getText());
     }
 
     public void updateTimeTaskData() {
-        if (this.mainTimerTask != null) {
-            this.lblTime.setText(this.mainTimerTask.toString("mm:ss"));
-            this.frame.getTxtTime().setText(this.mainTimerTask.toString("mm:ss"));
+        if (this.getMainTimerTask() != null) {
+            this.getLblTime().setText(this.getMainTimerTask().toString("mm:ss"));
+            this.getFrameManager().getTxtTime().setText(this.getMainTimerTask().toString("mm:ss"));
         }
-        if (this.timerGuestPenalty1 != null) {
-            this.frame.getTxtGuestPenalty1().setText(
-                    this.timerGuestPenalty1.toString("m:ss"));
-            this.lblGuestPenalty1.setText(this.timerGuestPenalty1.toString("m:ss"));
+        if (this.getTimerGuestPenalty1() != null) {
+            this.getFrameManager().getTxtGuestPenalty1().setText(
+                    this.getTimerGuestPenalty1().toString("m:ss"));
+            this.getLblGuestPenalty1().setText(this.getTimerGuestPenalty1().toString("m:ss"));
         }
-        if (this.timerGuestPenalty2 != null) {
-            this.frame.getTxtGuestPenalty2().setText(
-                    this.timerGuestPenalty2.toString("m:ss"));
-            this.lblGuestPenalty2.setText(this.timerGuestPenalty2.toString("m:ss"));
+        if (this.getTimerGuestPenalty2() != null) {
+            this.getFrameManager().getTxtGuestPenalty2().setText(
+                    this.getTimerGuestPenalty2().toString("m:ss"));
+            this.getLblGuestPenalty2().setText(this.getTimerGuestPenalty2().toString("m:ss"));
         }
-        if (this.timerHostPenalty1 != null) {
-            this.frame.getTxtHostPenalty1().setText(
-                    this.timerHostPenalty1.toString("m:ss"));
-            this.lblHostPenalty1.setText(this.timerHostPenalty1.toString("m:ss"));
+        if (this.getTimerHostPenalty1() != null) {
+            this.getFrameManager().getTxtHostPenalty1().setText(
+                    this.getTimerHostPenalty1().toString("m:ss"));
+            this.getLblHostPenalty1().setText(this.getTimerHostPenalty1().toString("m:ss"));
         }
-        if (this.timerHostPenalty2 != null) {
-            this.frame.getTxtHostPenalty2().setText(
-                    this.timerHostPenalty2.toString("m:ss"));
-            this.lblHostPenalty2.setText(this.timerHostPenalty2.toString("m:ss"));
+        if (this.getTimerHostPenalty2() != null) {
+            this.getFrameManager().getTxtHostPenalty2().setText(
+                    this.getTimerHostPenalty2().toString("m:ss"));
+            this.getLblHostPenalty2().setText(this.getTimerHostPenalty2().toString("m:ss"));
         }
     }
+
+    public JLabel getLblTimeOutHost() {
+        return lblTimeOutHost;
+    }
+
+    public JLabel getLblTimeOutGuest() {
+        return lblTimeOutGuest;
+    }
+
+    /**
+     * Returns the mainTimer.
+     * 
+     * @return the mainTimer
+     */
+    public MainTimer getMainTimer() {
+        return mainTimer;
+    }
+
+    /**
+     * Returns the mainTimerTask.
+     * 
+     * @return the mainTimerTask
+     */
+    public TimerTask getMainTimerTask() {
+        return mainTimerTask;
+    }
+
+    /**
+     * Sets the mainTimerTask.
+     * 
+     * @param mainTimerTask the mainTimerTask to set
+     */
+    public void setMainTimerTask(TimerTask mainTimerTask) {
+        this.mainTimerTask = mainTimerTask;
+    }
+
+    /**
+     * Returns the frame.
+     * 
+     * @return the frame
+     */
+    public JScoreboardManagerFrame getFrameManager() {
+        return frameManager;
+    }
+
+    /**
+     * Returns the lblTime.
+     * 
+     * @return the lblTime
+     */
+    public JLabel getLblTime() {
+        return lblTime;
+    }
+
+    /**
+     * Sets the lblTime.
+     * 
+     * @param lblTime the lblTime to set
+     */
+    public void setLblTime(JLabel lblTime) {
+        this.lblTime = lblTime;
+    }
+
+    /**
+     * Returns the lblPeriod.
+     * 
+     * @return the lblPeriod
+     */
+    public JLabel getLblPeriod() {
+        return lblPeriod;
+    }
+
+    /**
+     * Sets the lblPeriod.
+     * 
+     * @param lblPeriod the lblPeriod to set
+     */
+    public void setLblPeriod(JLabel lblPeriod) {
+        this.lblPeriod = lblPeriod;
+    }
+
+    /**
+     * Returns the timerGuestPenalty1.
+     * 
+     * @return the timerGuestPenalty1
+     */
+    public TimerTask getTimerGuestPenalty1() {
+        return timerGuestPenalty1;
+    }
+
+    /**
+     * Sets the timerGuestPenalty1.
+     * 
+     * @param timerGuestPenalty1 the timerGuestPenalty1 to set
+     */
+    public void setTimerGuestPenalty1(TimerTask timerGuestPenalty1) {
+        this.timerGuestPenalty1 = timerGuestPenalty1;
+    }
+
+    /**
+     * Returns the lblGuestPenalty1.
+     * 
+     * @return the lblGuestPenalty1
+     */
+    public JLabel getLblGuestPenalty1() {
+        return lblGuestPenalty1;
+    }
+
+    /**
+     * Sets the lblGuestPenalty1.
+     * 
+     * @param lblGuestPenalty1 the lblGuestPenalty1 to set
+     */
+    public void setLblGuestPenalty1(JLabel lblGuestPenalty1) {
+        this.lblGuestPenalty1 = lblGuestPenalty1;
+    }
+
+    /**
+     * Returns the timerGuestPenalty2.
+     * 
+     * @return the timerGuestPenalty2
+     */
+    public TimerTask getTimerGuestPenalty2() {
+        return timerGuestPenalty2;
+    }
+
+    /**
+     * Sets the timerGuestPenalty2.
+     * 
+     * @param timerGuestPenalty2 the timerGuestPenalty2 to set
+     */
+    public void setTimerGuestPenalty2(TimerTask timerGuestPenalty2) {
+        this.timerGuestPenalty2 = timerGuestPenalty2;
+    }
+
+    /**
+     * Returns the lblGuestPenalty2.
+     * 
+     * @return the lblGuestPenalty2
+     */
+    public JLabel getLblGuestPenalty2() {
+        return lblGuestPenalty2;
+    }
+
+    /**
+     * Sets the lblGuestPenalty2.
+     * 
+     * @param lblGuestPenalty2 the lblGuestPenalty2 to set
+     */
+    public void setLblGuestPenalty2(JLabel lblGuestPenalty2) {
+        this.lblGuestPenalty2 = lblGuestPenalty2;
+    }
+
+    /**
+     * Returns the timerHostPenalty1.
+     * 
+     * @return the timerHostPenalty1
+     */
+    public TimerTask getTimerHostPenalty1() {
+        return timerHostPenalty1;
+    }
+
+    /**
+     * Sets the timerHostPenalty1.
+     * 
+     * @param timerHostPenalty1 the timerHostPenalty1 to set
+     */
+    public void setTimerHostPenalty1(TimerTask timerHostPenalty1) {
+        this.timerHostPenalty1 = timerHostPenalty1;
+    }
+
+    /**
+     * Returns the lblHostPenalty1.
+     * 
+     * @return the lblHostPenalty1
+     */
+    public JLabel getLblHostPenalty1() {
+        return lblHostPenalty1;
+    }
+
+    /**
+     * Sets the lblHostPenalty1.
+     * 
+     * @param lblHostPenalty1 the lblHostPenalty1 to set
+     */
+    public void setLblHostPenalty1(JLabel lblHostPenalty1) {
+        this.lblHostPenalty1 = lblHostPenalty1;
+    }
+
+    /**
+     * Returns the timerHostPenalty2.
+     * 
+     * @return the timerHostPenalty2
+     */
+    public TimerTask getTimerHostPenalty2() {
+        return timerHostPenalty2;
+    }
+
+    /**
+     * Sets the timerHostPenalty2.
+     * 
+     * @param timerHostPenalty2 the timerHostPenalty2 to set
+     */
+    public void setTimerHostPenalty2(TimerTask timerHostPenalty2) {
+        this.timerHostPenalty2 = timerHostPenalty2;
+    }
+
+    /**
+     * Returns the lblHostPenalty2.
+     * 
+     * @return the lblHostPenalty2
+     */
+    public JLabel getLblHostPenalty2() {
+        return lblHostPenalty2;
+    }
+
+    /**
+     * Sets the lblHostPenalty2.
+     * 
+     * @param lblHostPenalty2 the lblHostPenalty2 to set
+     */
+    public void setLblHostPenalty2(JLabel lblHostPenalty2) {
+        this.lblHostPenalty2 = lblHostPenalty2;
+    }
+
 }

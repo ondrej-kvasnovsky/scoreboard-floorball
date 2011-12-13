@@ -54,4 +54,5 @@ public class DefaultState extends AbstractState {
     public void initTxtTime(final JScoreboardManagerFrame frame) {
         frame.getTxtTime().setEnabled(true);
     }
+
 }
