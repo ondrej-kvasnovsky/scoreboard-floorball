@@ -11,58 +11,60 @@ import java.util.List;
  */
 public class MainTimer extends Thread {
 
-	private final int changedTime = 1000;
-	private List<MainTimerListener> mainTimerListener = new ArrayList<MainTimerListener>();
-	private boolean suspended = false;
+    private final int changedTime = 1000;
+    private final List<MainTimerListener> mainTimerListener = new ArrayList<MainTimerListener>();
+    private boolean suspended = false;
 
-	public MainTimer() {
-	}
+    public MainTimer() {
+    }
 
-	public void goBackInTime(int seconds) {
-		for (MainTimerListener tl : this.mainTimerListener) {
-			tl.goBackInTime(seconds);
-		}
-	}
+    public void goBackInTime(final int seconds) {
+        for (final MainTimerListener tl : this.mainTimerListener) {
+            tl.goBackInTime(seconds);
+        }
+    }
 
-	public synchronized void addMainTimerListener(MainTimerListener tl) {
-		synchronized (mainTimerListener) {
-			this.mainTimerListener.add(tl);
-		}
-	}
+    public synchronized void addMainTimerListener(final MainTimerListener tl) {
+        synchronized (this.mainTimerListener) {
+            this.mainTimerListener.add(tl);
+        }
+    }
 
-	public void cont() {
-		suspended = false;
-	}
+    public void cont() {
+        this.suspended = false;
+    }
 
-	public final boolean isSuspended() {
-		return suspended;
-	}
+    public final boolean isSuspended() {
+        return this.suspended;
+    }
 
-	public void pause() {
-		suspended = true;
-	}
+    public void pause() {
+        this.suspended = true;
+    }
 
-	public void removeMainTimerListener(MainTimerListener tl) {
-		synchronized (mainTimerListener) {
-			final boolean remove = this.mainTimerListener.remove(tl);
-			System.out.println(remove);
-		}
-	}
+    public void removeMainTimerListener(final MainTimerListener tl) {
+        synchronized (this.mainTimerListener) {
+            final boolean remove = this.mainTimerListener.remove(tl);
+            System.out.println(remove);
+        }
+    }
 
-	public void run() {
-		while (Thread.currentThread() == this) {
-			try {
-				sleep(changedTime);
-				if (!suspended) {
-					synchronized (mainTimerListener) {
-						for (MainTimerListener tl : this.mainTimerListener) {
-							tl.timeChanged(changedTime);
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    @Override
+    public void run() {
+        while (Thread.currentThread() == this) {
+            try {
+                sleep(this.changedTime);
+                if (!this.suspended) {
+                    synchronized (this.mainTimerListener) {
+                        for (final MainTimerListener tl : this.mainTimerListener) {
+                            tl.timeChanged(this.changedTime);
+                        }
+                    }
+                }
+            }
+            catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

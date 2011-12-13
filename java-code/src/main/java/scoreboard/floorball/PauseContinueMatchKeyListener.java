@@ -14,49 +14,50 @@ import scoreboard.floorball.state.StateHolder;
  */
 final class PauseContinueMatchKeyListener implements KeyListener {
 
-	/**
+    /**
     * 
     */
-	private final JScoreboardManagerFrame frame;
+    private final JScoreboardManagerFrame frame;
 
-	/**
-	 * @param jScoreboardManagerFrame
-	 */
-	PauseContinueMatchKeyListener(
-			JScoreboardManagerFrame jScoreboardManagerFrame) {
-		frame = jScoreboardManagerFrame;
-	}
+    /**
+     * @param jScoreboardManagerFrame
+     */
+    PauseContinueMatchKeyListener(
+            final JScoreboardManagerFrame jScoreboardManagerFrame) {
+        this.frame = jScoreboardManagerFrame;
+    }
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-	}
+    @Override
+    public void keyTyped(final KeyEvent e) {
+    }
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-	}
+    @Override
+    public void keyReleased(final KeyEvent e) {
+    }
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if (frame.getCurrentMatch() != null) {
-			System.out.println("key - " + e.getKeyCode());
-			if (frame.getStateHolder().getState() == StateHolder.STATE_MATCH_PAUSED) {
-				if (37 == e.getKeyCode()) {
-					frame.getCurrentMatch().goBackInTime(-1);
-				}
-				if (39 == e.getKeyCode()) {
-					frame.getCurrentMatch().goBackInTime(1);
-				}
-			}
-			final int keyCodeSpace = 32;
-			if (keyCodeSpace == e.getKeyCode()) {
-				if (frame.getStateHolder().getState() == StateHolder.STATE_MATCH_STARTED) {
-					frame.pauseMatchAction.actionPerformed(new ActionEvent(
-							frame.getBtnPause(), 0, "space pressed"));
-				} else {
-					frame.continueMatchAction.actionPerformed(new ActionEvent(
-							frame.getBtnContinueMatch(), 0, "space pressed"));
-				}
-			}
-		}
-	}
+    @Override
+    public void keyPressed(final KeyEvent e) {
+        if (this.frame.getCurrentMatch() != null) {
+            System.out.println("key - " + e.getKeyCode());
+            if (this.frame.getStateHolder().getState() == StateHolder.STATE_MATCH_PAUSED) {
+                if (37 == e.getKeyCode()) {
+                    this.frame.getCurrentMatch().goBackInTime(-1);
+                }
+                if (39 == e.getKeyCode()) {
+                    this.frame.getCurrentMatch().goBackInTime(1);
+                }
+            }
+            final int keyCodeSpace = 32;
+            if (keyCodeSpace == e.getKeyCode()) {
+                if (this.frame.getStateHolder().getState() == StateHolder.STATE_MATCH_STARTED) {
+                    this.frame.pauseMatchAction.actionPerformed(new ActionEvent(
+                            this.frame.getBtnPause(), 0, "space pressed"));
+                }
+                else {
+                    this.frame.continueMatchAction.actionPerformed(new ActionEvent(
+                            this.frame.getBtnContinueMatch(), 0, "space pressed"));
+                }
+            }
+        }
+    }
 }

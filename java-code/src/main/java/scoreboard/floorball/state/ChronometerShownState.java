@@ -11,15 +11,15 @@ import scoreboard.floorball.JScoreboardManagerFrame;
  */
 public class ChronometerShownState extends AbstractState {
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see scoreboard.floorball.state.AbstractState#initBtnStart(com.ondrejkvasnovsky
-    * .chronometer.JChronometerManagerFrame)
-    */
-   @Override
-   public void initBtnStart(JScoreboardManagerFrame frame) {
-      frame.getBtnStart().setEnabled(true);
-   }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see scoreboard.floorball.state.AbstractState#initBtnStart(com.ondrejkvasnovsky
+     * .chronometer.JChronometerManagerFrame)
+     */
+    @Override
+    public void initBtnStart(final JScoreboardManagerFrame frame) {
+        frame.getBtnStart().setEnabled(true);
+    }
 
 }

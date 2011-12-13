@@ -9,6 +9,7 @@ package scoreboard.timer;
  */
 public interface TimerTaskListener {
 
-   void taskEnded();
-   void timeChanged();
+    void taskEnded();
+
+    void timeChanged();
 }

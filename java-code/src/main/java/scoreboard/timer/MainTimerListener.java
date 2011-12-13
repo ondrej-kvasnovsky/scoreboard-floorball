@@ -8,7 +8,7 @@ package scoreboard.timer;
  */
 public interface MainTimerListener {
 
-   public void timeChanged(int changedTime);
+    public void timeChanged(int changedTime);
 
-   public void goBackInTime(int seconds);
+    public void goBackInTime(int seconds);
 }
