@@ -1,7 +1,4 @@
-# scoreboard-floorball
-
-## Scoreboard for floorball
-Please, give us [feedback](https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFFuVDFDZmtsT3VZVndJbVFhMHlVeGc6MQ).
+# Scoreboard for floorball
 
 ## Why this scoreboard?
 There is no free scoreboard for floorball that could be used and customized.
